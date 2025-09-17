@@ -7,13 +7,25 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Item {
+model Image {
+    id         Int       @id @default(autoincrement())
+    name       String
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+    Category   Category? @relation(fields: [categoryId], references: [id])
+    categoryId Int?
+
+    @@index([name])
+}
+
+model Category {
     id        Int      @id @default(autoincrement())
-    name      String
-    height    Float // cm
+    name      String   @unique
+    slug      String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([name, height])
-    @@map("items")
+    images Image[]
+
+    @@index([name, slug])
 }

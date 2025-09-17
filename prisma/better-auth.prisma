@@ -2,6 +2,7 @@ model User {
     id            String    @id
     name          String
     email         String
+    isAdmin       Boolean   @default(false)
     emailVerified Boolean
     image         String?
     createdAt     DateTime
