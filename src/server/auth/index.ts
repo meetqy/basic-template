@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { db } from "../db";
 import { env } from "~/env";
+import { admin } from "better-auth/plugins/admin";
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -9,6 +10,7 @@ export const auth = betterAuth({
   }),
   secret: env.BETTER_AUTH_SECRET,
   emailAndPassword: { enabled: true },
+  plugins: [admin()],
 });
 
 export type Session = typeof auth.$Infer.Session;
