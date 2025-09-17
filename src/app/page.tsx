@@ -1,15 +1,11 @@
 import { HydrateClient } from "~/trpc/server";
+import { LoginUp } from "./_components/post";
 
-export default async function Home() {
-  auth
+export default function Home() {
 
   return (
     <HydrateClient>
-      <div>
-        <button onClick={() => {
-
-        }}>Sign Up</button>
-      </div>
+      <LoginUp />
     </HydrateClient>
   );
 }
