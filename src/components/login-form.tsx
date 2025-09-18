@@ -8,6 +8,8 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { authClient } from "~/server/auth/client";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -25,11 +27,18 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     resolver: zodResolver(loginSchema),
   });
 
+  const router = useRouter();
+
   const onSubmit = async (data: LoginFormData) => {
     try {
-      // Handle login submission
-      console.log("Login data:", data);
-      // await authClient.signIn.email(data);
+      const res = await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+      });
+
+      console.log("Login successful:", res);
+
+      router.replace("/");
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -70,7 +79,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button type="submit" className="w-full cursor-pointer" disabled={isSubmitting}>
                   {isSubmitting ? "Logging in..." : "Login"}
                 </Button>
                 <Button type="button" variant="outline" className="w-full" onClick={handleGoogleLogin}>
