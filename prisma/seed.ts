@@ -1,39 +1,34 @@
 import { PrismaClient } from "@prisma/client";
-import imageData from "~/data/image.json";
+import { auth } from "~/server/auth";
+
+const admin_email = process.env.ADMIN_EMAIL!;
+const admin_password = process.env.ADMIN_PASSWORD!;
 
 const prisma = new PrismaClient();
-interface Image {
-  id: number;
-  keyword_en: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 async function main() {
-  // Seed your database here
-  (imageData as Image[]).forEach((image) => {
-    const name = (image.keyword_en || "").trim();
-    if (!image.id || !name) return;
-    // 排除汉字
-    if (/[^\u0000-\u00ff]/.test(name)) return;
-
-    void prisma.image
-      .create({
-        data: {
-          id: image.id,
-          name: image.keyword_en,
-          createdAt: image.createdAt,
-          updatedAt: image.updatedAt,
-        },
-      })
-      .then();
+  const existUser = await prisma.user.findFirst({
+    where: { email: admin_email },
   });
+
+  if (!existUser) {
+    const { user } = await auth.api.signUpEmail({
+      body: {
+        name: "MEETQY",
+        email: admin_email,
+        password: admin_password,
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { role: "admin" },
+    });
+  }
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-  })
-  .finally(() => {
-    void prisma.$disconnect();
-  });
+main().catch((e) => {
+  console.error("Failed to seed database");
+  console.error(e);
+  process.exit(1);
+});
