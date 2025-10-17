@@ -15,7 +15,7 @@ async function main() {
   if (!existUser) {
     const { user } = await auth.api.signUpEmail({
       body: {
-        name: "MEETQY",
+        name: "ADMIN",
         email: admin_email,
         password: admin_password,
       },
