@@ -1,41 +1,49 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
+  findMany: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.number().nullish(),
+        keywords: z.string().nullish(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const limit = input.limit ?? 50;
+      const { cursor, keywords } = input;
+
+      const items = await ctx.db.image.findMany({
+        take: limit + 1, // Take one extra to determine if there's a next page
+        cursor: cursor ? { id: cursor } : undefined,
+        skip: cursor ? 1 : 0, // Skip the cursor item when paginating
+        where: {
+          name: {
+            contains: keywords ?? undefined,
+            mode: "insensitive",
+          },
+        },
+        orderBy: {
+          id: "asc", // Consistent ordering for cursor pagination
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (items.length > limit) {
+        const nextItem = items.pop(); // Remove the extra item
+        nextCursor = nextItem!.id;
+      }
+
       return {
-        greeting: `Hello ${input.text}`,
+        items,
+        nextCursor,
       };
     }),
 
-  create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.post.create({
-        data: {
-          name: input.name,
-          createdBy: { connect: { id: ctx.session.user.id } },
-        },
-      });
-    }),
-
-  getLatest: protectedProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
-    });
-
-    return post ?? null;
-  }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
+  category: publicProcedure.query(async ({ ctx }) => {
+    const categories = await ctx.db.category.findMany();
+    return categories;
   }),
 });
