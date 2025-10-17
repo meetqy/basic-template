@@ -1,7 +1,12 @@
-export default function Home() {
+import { UserCard } from "~/components/user-card";
+
+export default async function Home() {
   return (
-    <div className="container mx-auto">
-      <div className="grid grid-cols-4">131</div>
+    <div>
+      Welcome to the Home Page
+      <div className="max-w-xl">
+        <UserCard />
+      </div>
     </div>
   );
 }

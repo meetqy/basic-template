@@ -2,8 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "~/components/ui/button";
@@ -12,7 +14,6 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import { authClient } from "~/server/auth/client";
-
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -40,10 +41,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       });
 
       console.log("Login successful:", res);
-
+      toast.success("Logged in successfully!");
       router.replace("/");
     } catch (error) {
       console.error("Login error:", error);
+      toast.error("Failed to log in.");
     }
   };
 
@@ -92,9 +94,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
+              <Link href="/sign-up" className="underline underline-offset-4">
                 Sign up
-              </a>
+              </Link>
             </div>
           </form>
         </CardContent>
