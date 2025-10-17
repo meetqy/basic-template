@@ -14,8 +14,7 @@ interface CategoryFormData {
   slug: string;
 }
 
-const generateSlug = (name: string): string =>
-  slugify(name, { lower: true, strict: true, trim: true });
+const generateSlug = (name: string): string => slugify(name, { lower: true, strict: true, trim: true });
 
 export default function CreateCategoryPage() {
   const createCategory = api.category.create.useMutation();
@@ -99,8 +98,7 @@ export default function CreateCategoryPage() {
                   required: "URL Slug is required",
                   pattern: {
                     value: /^[a-z0-9-]+$/,
-                    message:
-                      "URL Slug can only contain lowercase letters, numbers and hyphens",
+                    message: "URL Slug can only contain lowercase letters, numbers and hyphens",
                   },
                 })}
                 placeholder="url-slug"
@@ -114,11 +112,7 @@ export default function CreateCategoryPage() {
 
             {/* Submit Buttons */}
             <div className="flex gap-4">
-              <Button
-                type="submit"
-                disabled={createCategory.isPending}
-                className="flex-1"
-              >
+              <Button type="submit" disabled={createCategory.isPending} className="flex-1">
                 {createCategory.isPending ? "Creating..." : "Create Category"}
               </Button>
 
