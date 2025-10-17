@@ -1,9 +1,13 @@
 "use client";
 
-import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
-import { AppSidebar } from "./_components/app-sidebar";
-import { authClient } from "~/server/auth/client";
 import { redirect } from "next/navigation";
+
+
+import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
+import { authClient } from "~/server/auth/client";
+
+import { AppSidebar } from "./_components/app-sidebar";
+
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data, isPending } = authClient.useSession();

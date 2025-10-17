@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+
 import imageData from "~/data/image.json";
 
 const prisma = new PrismaClient();
